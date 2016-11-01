@@ -9,7 +9,7 @@
     "build": "eval $(aws ecr get-login --region=us-west-2) && V=v$(git rev-parse --short HEAD); docker build -t 878160042194.dkr.ecr.us-west-2.amazonaws.com/invoker:${V} .; docker push 878160042194.dkr.ecr.us-west-2.amazonaws.com/invoker:${V}",
     "deploy": "node bin/ecs_deploy.js dispatch invoker 878160042194.dkr.ecr.us-west-2.amazonaws.com/invoker"
   },
-  "author": "",
+  "author": "Jeremy Wells <jwells@sparks.network>",
   "license": "ISC",
   "dependencies": {
     "ajv": "^4.8.2",
