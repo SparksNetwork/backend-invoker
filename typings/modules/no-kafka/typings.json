@@ -1,0 +1,10 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "https://raw.githubusercontent.com/jemmyw/typed-no-kafka/1effb1b/typings.json",
+    "raw": "github:jemmyw/typed-no-kafka#1effb1b",
+    "main": "index.d.ts",
+    "name": "no-kafka",
+    "type": "typings"
+  }
+}

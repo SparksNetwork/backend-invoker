@@ -1,0 +1,10 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "https://raw.githubusercontent.com/jemmyw/typed-farmhash/master/typings.json",
+    "raw": "github:jemmyw/typed-farmhash",
+    "main": "index.d.ts",
+    "name": "farmhash",
+    "type": "typings"
+  }
+}

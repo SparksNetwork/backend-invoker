@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "minimatch": "registry:npm/minimatch#3.0.0+20160723033700",
+    "no-kafka": "github:jemmyw/typed-no-kafka#1effb1b",
+    "ramda": "registry:npm/ramda#0.21.0+20160531162943"
+  },
+  "globalDependencies": {
+    "aws-sdk": "github:jemmyw/typed-aws-sdk#HEAD",
+    "node": "registry:env/node#6.0.0+20161019193037",
+    "winston": "registry:dt/winston#0.0.0+20161006194546"
+  }
+}
