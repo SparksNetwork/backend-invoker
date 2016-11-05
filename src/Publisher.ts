@@ -13,11 +13,12 @@ export class Publisher {
   private producer:Producer;
 
   constructor(options) {
-    this.producer = new Producer(Object.assign({}, {
+    const producerOptions = Object.assign({}, {
       clientId: 'invoker',
-      connectionString: process.env['KAFKA_CONNECTION'],
       partitioner: farmhashPartitioner
-    }, options));
+    }, options);
+
+    this.producer = new Producer(producerOptions);
   }
 
   init() {

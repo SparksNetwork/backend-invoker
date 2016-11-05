@@ -73,7 +73,7 @@ export class Run extends EventEmitter {
 
   async initConsumers() {
     this.consumers = await this.makeConsumers();
-    await this.consumers.map(c => c.init());
+    return Promise.all(this.consumers.map(c => c.init()));
   }
 
   async refresh() {

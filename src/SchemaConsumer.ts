@@ -19,7 +19,7 @@ interface MessageHandler {
 export class SchemaConsumer extends EventEmitter {
   private consumer:GroupConsumer;
 
-  constructor(protected topic:string, protected schemas:Schema[], protected handler:MessageHandler, protected consumerOptions?:Kafka.GroupConsumerOptions) {
+  constructor(protected topic:string, protected schemas:Schema[], protected handler:MessageHandler, consumerOptions?:Kafka.GroupConsumerOptions) {
     super();
 
     this.consumer = new GroupConsumer(Object.assign({}, {
@@ -63,7 +63,7 @@ export class SchemaConsumer extends EventEmitter {
   }
 
   async init() {
-    await this.consumer.init({
+    return this.consumer.init({
       strategy: 'ConsumerStrategy',
       subscriptions: [this.topic],
       fn: RoundRobinAssignment,
