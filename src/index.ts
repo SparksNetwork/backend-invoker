@@ -40,10 +40,11 @@ runner.on('refresh', function() {
 runner.on('end', function() {
   info('ended');
   process.exit();
-})
+});
 
 runner.on('run', function() {
-  info('Running');
+  info('Started');
+  info('Kafka: ', connectionString);
 });
 
 runner.on('message', function(_, topic) {
