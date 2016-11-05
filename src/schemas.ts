@@ -11,18 +11,6 @@ export function makeAjv(schemas:any[]) {
   return ajv;
 }
 
-export async function remoteSchemas() {
-  const s3 = new S3();
-
-  const response = await s3.getObject({
-    Bucket: process.env['S3_BUCKET'],
-    Key: process.env['SCHEMAS_KEY']
-  }).promise();
-
-  const schemas = JSON.parse(response.Body as any);
-  return makeAjv(schemas);
-}
-
 export function getValidatorsFor(ajv, fn:SparksFunction) {
   const schemaPatterns = fn.config.schemas || [];
   const schemas = schemaPatterns
