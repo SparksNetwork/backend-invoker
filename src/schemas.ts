@@ -2,17 +2,13 @@ import * as minimatch from 'minimatch';
 import * as Ajv from 'ajv';
 import {S3} from 'aws-sdk';
 
-function ajv(schemas:any[]) {
+export function makeAjv(schemas:any[]) {
   const ajv = Ajv({
     coerceTypes: true
   });
 
   schemas.forEach(schema => ajv.addSchema(schema));
   return ajv;
-}
-
-export async function localSchemas() {
-  return ajv(require('sparks-schemas/schemas.json'));
 }
 
 export async function remoteSchemas() {
@@ -24,10 +20,10 @@ export async function remoteSchemas() {
   }).promise();
 
   const schemas = JSON.parse(response.Body as any);
-  return ajv(schemas);
+  return makeAjv(schemas);
 }
 
-export function getSchemasFor(ajv, fn:SparksFunction) {
+export function getValidatorsFor(ajv, fn:SparksFunction) {
   const schemaPatterns = fn.config.schemas || [];
   const schemas = schemaPatterns
     .reduce((acc, p) =>

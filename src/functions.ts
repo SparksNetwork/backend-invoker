@@ -11,9 +11,9 @@ export async function remoteFunctions():Promise<SparksFunction[]> {
   return JSON.parse(functionsObj.Body as any);
 }
 
-export function localFunctions(path:string):Promise<SparksFunction[]> {
+export function localFunctions():Promise<SparksFunction[]> {
   return new Promise((resolve, reject) => {
-    readFile(path, function (err, data) {
+    readFile('functions.json', function (err, data) {
       if (err) {
         return reject(err);
       }
