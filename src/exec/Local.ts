@@ -39,13 +39,17 @@ const context = {clientContext: JSON.parse('${JSON.stringify(context)}')};
 const fn = require('./${this.fn.path}');
 
 fn(message, context)
-  .then(response => console.log(JSON.stringify({
-    success: true,
-    response: response
+  .then(function(response) {
+    console.log(JSON.stringify({
+      success: true,
+      response: response
+    }))
   })
-  .catch(error => console.log(JSON.stringify({
-    success: false,
-    error: error
+  .catch(function(error) {
+    console.log(JSON.stringify({
+      success: false,
+      error: error
+    }));
   });
 `;
 
