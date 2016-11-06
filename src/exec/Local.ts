@@ -1,8 +1,9 @@
-import {exec} from "child_process";
 import {writeFile} from "fs";
 import {exists} from "fs";
 import {unlink} from "fs";
-import {error} from "../log";
+import {error, info} from "../log";
+import {fork} from "child_process";
+import {flatten} from 'ramda';
 
 async function randName(name:string):Promise<string> {
   const r = Math.random() * 10000;
@@ -18,39 +19,32 @@ async function randName(name:string):Promise<string> {
   return p as Promise<string>;
 }
 
-async function execAsync(cmd):Promise<string> {
-  const p = new Promise((resolve, reject) => {
-    exec(cmd, (err, stdout) => err ? reject(err) : resolve(stdout))
-  });
-  return p as Promise<string>
-}
-
 export class LocalExecutor implements Executor {
   constructor(private fn:SparksFunction) {
   }
 
   async exec(message:any, context:ClientContext) {
     const program = `
-const path = require('path');
-process.chdir(path.join(process.cwd(), 'services'));
+require('source-map-support').install();
+process.chdir('./services');
+const fn = require('./services/${this.fn.path}/index').default;
 
-const message = JSON.parse('${JSON.stringify(message)}');
-const context = {clientContext: JSON.parse('${JSON.stringify(context)}')};
-const fn = require('./${this.fn.path}');
+process.on('disconnected', function() {
+  process.exit();
+});
 
-fn(message, context)
-  .then(function(response) {
-    console.log(JSON.stringify({
-      success: true,
+process.on('message', function(msg) {
+  const message = msg.message;
+  const context = msg.context;
+  
+  fn(message, context, function(err, response) {
+    process.send({
+      success: !err,
+      error: err,
       response: response
-    }))
-  })
-  .catch(function(error) {
-    console.log(JSON.stringify({
-      success: false,
-      error: error
-    }));
+    });
   });
+});
 `;
 
     const tmpName = await randName(this.fn.name);
@@ -60,11 +54,32 @@ fn(message, context)
         writeFile(tmpName, program, err => err ? reject(err) : resolve());
       });
 
-      const output = await execAsync(`node ${tmpName}`);
-      const result = JSON.parse(output);
+      const result = await new Promise(function(resolve, reject) {
+        const cp = fork(tmpName);
+        let done = false;
+
+        cp.on('message', function (msg) {
+          resolve(msg);
+          done = true;
+          cp.disconnect();
+        });
+
+        cp.on('disconnected', function() {
+          if (!done) {
+            reject('child disconnected');
+          }
+        });
+
+        cp.send({
+          message,
+          context: {clientContext: context}
+        });
+      }) as any;
+
+      info('execution result', result);
 
       if(result.success) {
-        return result.response
+        return flatten(result.response || []);
       } else {
         error(result);
         throw new Error(result.error);
