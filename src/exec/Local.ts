@@ -31,6 +31,9 @@ export class LocalExecutor implements Executor {
 
   async exec(message:any, context:ClientContext) {
     const program = `
+const path = require('path');
+process.chdir(path.join(process.cwd(), 'services'));
+
 const message = JSON.parse('${JSON.stringify(message)}');
 const context = {clientContext: JSON.parse('${JSON.stringify(context)}')};
 const fn = require('./${this.fn.path}');
@@ -53,7 +56,7 @@ fn(message, context)
         writeFile(tmpName, program, err => err ? reject(err) : resolve());
       });
 
-      const output = await execAsync(`cd services; node ${tmpName}`);
+      const output = await execAsync(`node ${tmpName}`);
       const result = JSON.parse(output);
 
       if(result.success) {
