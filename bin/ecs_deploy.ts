@@ -27,36 +27,39 @@ async function getTaskDefinitionArn():Promise<string> {
     status: 'ACTIVE'
   }).promise()).taskDefinitionArns;
 
-  if (tasks.length === 0) {
+  if (tasks && tasks.length === 0) {
     tasks = (await ecs.listTaskDefinitions({
       familyPrefix: family,
       status: 'INACTIVE'
     }).promise()).taskDefinitionArns;
   }
 
-  if (tasks.length === 0) {
+  if (!tasks || tasks.length === 0) {
     throw new Error('Cannot find any tasks in ' + family);
   }
 
   return tasks[0];
 }
 
-async function getTaskDefinition() {
+async function getTaskDefinition():Promise<ECS.Types.TaskDefinition> {
   const arn = await getTaskDefinitionArn();
-  return (await ecs.describeTaskDefinition({
+  const response = await ecs.describeTaskDefinition({
     taskDefinition: arn
-  }).promise()).taskDefinition;
+  }).promise();
+
+  if (!response.taskDefinition) {
+    throw new Error('No task definition');
+  }
+
+  return response.taskDefinition;
 }
 
-async function makeTaskDefinition(taskDefinition:ECS.TaskDefinition, version:string) {
-  const container = taskDefinition.containerDefinitions[0];
-  container.image = [repositoryUrl, version].join(':');
-  container.environment = (container.environment || [])
-    .filter(item => item.name !== 'VERSION');
-  container.environment.push({
-    name: 'VERSION',
-    value: version
-  });
+async function makeTaskDefinition(taskDefinition:ECS.Types.TaskDefinition, version:string):Promise<ECS.Types.TaskDefinition> {
+  if (!taskDefinition.containerDefinitions) {
+    throw new Error('No container definitions');
+  }
+
+  taskDefinition.containerDefinitions[0].image = [repositoryUrl, version].join(':');
 
   const existingTaskArns = await ecs.listTaskDefinitions({
     familyPrefix: family,
@@ -69,22 +72,28 @@ async function makeTaskDefinition(taskDefinition:ECS.TaskDefinition, version:str
     taskRoleArn: taskDefinition.taskRoleArn
   }).promise();
 
-  await Promise.all(existingTaskArns.taskDefinitionArns.map(arn => {
-    ecs.deregisterTaskDefinition({
-      taskDefinition: arn
-    }).promise()
-  }));
+  if (!response.taskDefinition) {
+    throw new Error('No task definition');
+  }
+
+  if (existingTaskArns.taskDefinitionArns) {
+    await Promise.all(existingTaskArns.taskDefinitionArns.map(arn => {
+      ecs.deregisterTaskDefinition({
+        taskDefinition: arn
+      }).promise();
+    }));
+  }
 
   return response.taskDefinition;
 }
 
-async function updateService(taskDefinition:{family:string, revision:number}) {
-  const taskDef:string = [taskDefinition.family, taskDefinition.revision].join(':');
+async function updateService({family, revision}) {
+  const taskDef:string = [family, revision].join(':');
 
   return ecs.updateService({
     cluster: cluster,
     service: family,
-    taskDefinition: taskDef
+    taskDefinition: taskDef,
   }).promise();
 }
 
@@ -98,7 +107,7 @@ async function doit() {
   const newDefinition = await makeTaskDefinition(taskDefinition, version);
   console.log(`Registered definition ${newDefinition.family}:${newDefinition.revision}`);
 
-  await updateService(newDefinition);
+  await updateService({family: newDefinition.family || "", revision: newDefinition.revision});
   console.log('Successfully updated task definition to image', version);
 }
 

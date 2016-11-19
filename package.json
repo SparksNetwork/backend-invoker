@@ -15,7 +15,7 @@
   "dependencies": {
     "ajv": "^4.8.2",
     "ava": "^0.16.0",
-    "aws-sdk": "^2.6.12",
+    "aws-sdk": "^2.7.0",
     "farmhash": "^1.2.1",
     "minimatch": "^3.0.3",
     "no-kafka": "^2.9.2",
@@ -25,7 +25,9 @@
     "winston-cloudwatch": "^1.6.0"
   },
   "devDependencies": {
+    "@types/node": "^6.0.48",
     "aws-sdk-types": "jemmyw/aws-sdk-types",
+    "tslint": "^4.0.0",
     "typescript": "2.0.3",
     "typings": "^1.5.0"
   }
