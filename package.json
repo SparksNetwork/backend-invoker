@@ -14,11 +14,11 @@
   "license": "ISC",
   "dependencies": {
     "ajv": "^4.8.2",
-    "ava": "^0.16.0",
+    "ava": "^0.17.0",
     "aws-sdk": "^2.6.12",
     "farmhash": "^1.2.1",
     "minimatch": "^3.0.3",
-    "no-kafka": "^2.9.2",
+    "no-kafka": "^3.0.1",
     "ramda": "^0.22.1",
     "source-map-support": "^0.4.6",
     "winston": "^2.2.0",
@@ -26,7 +26,7 @@
   },
   "devDependencies": {
     "aws-sdk-types": "jemmyw/aws-sdk-types",
-    "typescript": "2.0.3",
-    "typings": "^1.5.0"
+    "typescript": "2.0.10",
+    "typings": "^2.0.0"
   }
 }
