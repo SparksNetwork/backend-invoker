@@ -13,7 +13,7 @@
   "author": "Jeremy Wells <jwells@sparks.network>",
   "license": "ISC",
   "dependencies": {
-    "ajv": "^4.8.2",
+    "ajv": "^4.9.1",
     "ava": "^0.16.0",
     "aws-sdk": "^2.7.0",
     "farmhash": "^1.2.1",
