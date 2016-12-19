@@ -29,6 +29,6 @@
     "aws-sdk-types": "jemmyw/aws-sdk-types",
     "tslint": "^4.0.0",
     "typescript": "2.0.3",
-    "typings": "^1.5.0"
+    "typings": "^2.1.0"
   }
 }
